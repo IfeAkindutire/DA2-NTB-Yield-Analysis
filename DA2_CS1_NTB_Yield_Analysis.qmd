@@ -817,6 +817,8 @@ Every auction-date observation lies below the 45-degree line, confirming that th
 
 The five visualisations tell a cohesive story: the Nigerian NTB market experienced a sustained yield decline during January–May 2026, driven by CBN policy easing at primary auctions. Secondary market yields followed the primary trend but maintained a consistent discount, which progressively narrowed. For a trader, this convergence signals increasing market efficiency and reduced arbitrage opportunities between primary and secondary markets.
 
+**Chart selection rationale:** The time series line chart (Plot 1) was chosen as the lead visualisation because yield data is fundamentally temporal — trend and level are the first things a trader looks at. An area chart (Plot 2) makes the spread's magnitude and sign immediately legible; a bar chart would obscure the continuous evolution. Violin plots (Plot 3) were preferred over simple boxplots because they reveal distributional shape (bimodality, skew) that boxplots hide. Monthly boxplots (Plot 4) facilitate the ANOVA story by grouping observations into the categories the hypothesis test compares. The scatter plot (Plot 5) with a 45-degree reference line was the natural choice for a bivariate relationship where the parity benchmark (primary = secondary) carries economic meaning (Adi, 2026, Ch. 5).
+
 # Hypothesis Testing
 
 ## Theory Recap
@@ -1069,6 +1071,14 @@ round(cor_pearson, 3) |>
   kbl(caption = "Pearson Correlation Matrix") |>
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
                 full_width = FALSE)
+
+# Display Spearman matrix
+cat("\n=== Spearman Rank Correlation Matrix ===\n")
+round(cor_spearman, 3) |>
+  as.data.frame() |>
+  kbl(caption = "Spearman Rank Correlation Matrix") |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE)
 ```
 
 ```{r}
@@ -1115,6 +1125,11 @@ cor_data = ntb[cor_cols].dropna()
 cor_pearson = cor_data.corr(method="pearson")
 print("Pearson Correlation Matrix:")
 print(cor_pearson.round(3).to_markdown())
+
+# Spearman
+cor_spearman = cor_data.corr(method="spearman")
+print("\nSpearman Rank Correlation Matrix:")
+print(cor_spearman.round(3).to_markdown())
 ```
 
 ```{python}
@@ -1149,6 +1164,10 @@ print(f"  After removing the time trend, yields remain {label} correlated.")
 ```
 
 :::
+
+## Pearson vs Spearman
+
+The Pearson and Spearman matrices are closely aligned, which is expected when relationships are approximately linear and data do not contain extreme rank disruptions. The Spearman coefficients are slightly higher in some pairs because Spearman captures monotonic (not just linear) associations — useful when yield movements have a consistent directional trend but not a perfectly constant rate of change. Kendall's tau would further reduce sensitivity to outliers but at the cost of statistical power with only 99 complete observations; Pearson and Spearman together provide a sufficient robustness check for this dataset (Adi, 2026, Ch. 8).
 
 ## Interpretation — Top Three Correlations
 
@@ -1397,6 +1416,8 @@ Central Bank of Nigeria. (2026). *NTB primary market auction results, January–
 
 Fox, J., & Weisberg, S. (2019). *An R companion to applied regression* (3rd ed.). Sage. https://socialsciences.mcmaster.ca/jfox/Books/Companion/
 
+Robinson, D., Hayes, A., & Couch, S. (2023). *broom: Convert statistical objects into tidy tibbles* (R package version 1.0.x). https://CRAN.R-project.org/package=broom
+
 Hunter, J. D. (2007). Matplotlib: A 2D graphics environment. *Computing in Science & Engineering*, *9*(3), 90–95. https://doi.org/10.1109/MCSE.2007.55
 
 McKinney, W. (2010). Data structures for statistical computing in Python. In *Proceedings of the 9th Python in Science Conference* (pp. 56–61). https://doi.org/10.25080/Majora-92bf1922-00a
@@ -1404,6 +1425,8 @@ McKinney, W. (2010). Data structures for statistical computing in Python. In *Pr
 R Core Team. (2024). *R: A language and environment for statistical computing* (Version 4.x). R Foundation for Statistical Computing. https://www.R-project.org/
 
 Seabold, S., & Perktold, J. (2010). Statsmodels: Econometric and statistical modeling with Python. In *Proceedings of the 9th Python in Science Conference* (pp. 92–96).
+
+Ushey, K., Allaire, J. J., & Tang, Y. (2024). *reticulate: Interface to Python* (R package version 1.x). https://CRAN.R-project.org/package=reticulate
 
 Van Rossum, G., & Drake, F. L. (2009). *Python 3 reference manual*. CreateSpace.
 
